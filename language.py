@@ -6,6 +6,7 @@ If the final state is reached, the output is printed and the grade can be found 
 If the final state is not reached, the machine will hang and run forever.
 This program also runs three test cases to show some of the possible outputs, and
 to run more test cases the user can change the value of the input_string.
+You can also just run with the accept function to see if the input is accepted or not.
 '''
 
 
