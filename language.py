@@ -64,7 +64,7 @@ class Turing(object):
             return True
         return False
 
-
+alphabet = ("tall wall vs boulder; moves: mantle, barn door, chimney, dyno, static, stem, drop knee, gaston, flag, rock over, walk through, match, layback, heel hook, toe hook, bicycle, deadpoint, knee bar; holds: crimp, sloper, jug, handle, side cling, under cling, pinch, pocket")
 initial_state = "Start"
 final_states = {"End"}
 accepting_states = ["End"]
@@ -429,39 +429,52 @@ transition_function = {("Start", "B"): ("H", "B", "R"),
 }
 
 data_structure = ("Some input string", "[]", initial_state, final_states, transition_function)
+## Note: The alphabet is not explicitly defined here; for testing, it's easier to use the input string and
+## let the transition function take care of the alphabet. This is more using the flexibility of Python
+## than anything else, and the implementation could be changed to include an alphabet if desired.
 
 def main():
     ## Define input string, create turing machine, run the machine.
     
     input = "B_Crimp_Dyno_Handle_Gaston_Pinch"
-    turing = Turing(input, "[]", initial_state, final_states, transition_function)
+    result = accept(input)
+    print(result[0])
+    for entry in result[1]:
+        print(entry)
 
-    print("Input: ", turing.get_tape())
+    input = "T_Sloper_Bump_Crimp_Deadpoint_Handle"
+    result = accept(input)
+    print(result[0])
+    for entry in result[1]:
+        print(entry)
 
-    while not turing.final():
-        turing.step()
-    print("State: ", turing.current_state)
-    print("Output: ", turing.get_tape())
+    input = "B_Pinch_Static_Handle_Dyno_Sloper" ## Feel free to change to test more cases
+    result = accept(input)
+    print(result[0])
+    for entry in result[1]:
+        print(entry)
 
-    input = "T_Crimp_Dyno_Handle_Gaston_Pinch_Static_Pocket_Gaston_Sloper_Gaston_Sloper_Bump_Crimp_Deadpoint_Handle"
-    turing = Turing(input, "[]", initial_state, final_states, transition_function)
-    print("Input: ", turing.get_tape())
+    input = "Invalid"
+    print(accept(input))
 
-    while not turing.final():
-        turing.step()
-    print("State: ", turing.current_state)
-    print("Output: ", turing.get_tape())
 
-    input = "B_Crimp_Dyno_Handle_Gaston_Pinch_Static_Handle_Dyno_Sloper" ## Feel free to change to test more cases
-    turing = Turing(input, "[]", initial_state, final_states, transition_function)
-    print("Input: ", turing.get_tape())
+import time
+def accept(input):
+    '''Takes the turing machine, returns Accept and the Path if the input is accepted, or Reject if not.
+    Turing machine hangs, doesn't reject, so adding timer to reject after too much time.'''
+    try:
+        turing = Turing(input, "[]", initial_state, final_states, transition_function)
+        accept_path = []
+        start = time.time()
+        while not turing.final():
+            accept_path.append((turing.current_state, turing.get_tape(), turing.head_position)) ## Tracks the path
+            turing.step()
+            if time.time() - start > 5: ## Premature reject rather than hang. If on slow computer may need to increase
+                return "Reject"
+        return "Accept", accept_path ## Note: the path is almost certainly going to be very long due to the nature of the machine
+    except:
+        return "Reject", []
 
-    while not turing.final():
-        turing.step()
-        ##print("State: ", turing.current_state) ## Uncomment to see the state at each step
-        ##print("Output: ", turing.get_tape()) ## Uncomment to see the tape at each step
-    print("State: ", turing.current_state)
-    print("Output: ", turing.get_tape())
 
 if __name__ == "__main__":
     main()
